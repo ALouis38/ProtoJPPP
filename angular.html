@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="fr" data-ng-app="myApp">
+<head>
+    <meta charset="UTF-8">
+    <title>Simple MVC Model demo</title>
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+</head>
+<body>
+
+    <div class="container">
+        <h1>Démo arbre</h1>
+        <input type="button" class="btn" value="redraw" onclick ="vnode.draw()" >
+        <input type="button" class="btn" value="undo" onclick ="undo()" >
+        <input type="button" class="btn" value="redo" onclick ="redo()" >
+        <div class="row">
+            <div class="span4">
+                <div class="well" id="zone"></div>
+            </div>
+            <div class="span4">
+                <div class="well" id="situation"></div>
+            </div>
+            <div class="span4">
+                <div class="span4" id="json">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div data-ng-controller="MyController">
+        <!-- <pre>{{ data | json}}</pre> -->
+        <div class="well">
+
+        </div>
+        <pre>{{ nodes | json}}</pre>
+    </div>
+
+
+
+    <a href="index.html">Index</a>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.1/angular.min.js"></script>
+    <script src="js/Node.js"></script>
+    <script>
+
+        var myApp = angular.module('myApp', []);
+
+        function MyController($scope, $http){
+            // $http.get('tree.json')
+            //     .success(function(data) {
+            //         $scope.data = data;
+            //     }
+            // );
+
+            // TEST Affichage
+            $scope.nodes = myNode.toJSON();
+            /////////////////////////////////
+        }
+
+        myApp.controller('MyController', MyController);
+
+    </script>
+
+    <script>
+
+
+
+        /**************************************************************************/
+        // TEST
+
+        var myNode = new Node('My Node', '', 'par');
+        var myNode2 = new Node('My Node 2', '', 'par');
+        var myNode3 = new Node('My Node 3', '', 'seq');
+        var myNode4 = new Node('My Node 4', '', 'seq');
+        var myNode5 = new Node('My Node 5', '', 'seq');
+
+        myNode.setId(1);
+        myNode2.setId(2);
+        myNode3.setId(3);
+        myNode4.setId(4);
+        myNode5.setId(5);
+
+        myNode2.setParent(myNode);
+        myNode.addChild(myNode2);
+
+        myNode3.setParent(myNode2);
+        myNode2.addChild(myNode3);
+
+        myNode4.setParent(myNode2);
+        myNode2.addChild(myNode4);
+
+        myNode5.setParent(myNode2);
+        myNode2.addChild(myNode5);
+
+        myNode2.removeChild(5);
+
+        console.log(myNode2.toJSON());
+        console.log(myNode5.toJSON());
+
+        /******************************************************************************/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        /* ===========UTILITIES ===================================*/
+/*function getRootNode (pNode) {
+    vRoot=pNode
+    while (vRoot.parentNode!=null) {
+        vRoot=vRoot.parentNode;
+    }
+    return (vRoot);
+}
+
+
+
+function getChildIndex (pNode) {
+    vParent=pNode.parentNode;
+    if (vParent!=null) {
+        vChildIndex=vParent.childNodes.indexOf(pNode);
+    } else {
+        vChildIndex=0;
+    }
+    return (vChildIndex);
+}
+
+function getClassInstancesNb(pClassName) { // TO CHECK DOESNT WORK
+    return (document.getElementsByClassName(pClassName).length);
+}*/
+
+
+
+
+
+
+    </script>
+
+</body>
+</html>

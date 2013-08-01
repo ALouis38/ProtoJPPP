@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="fr">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Simple MVC Model demo</title>
+
+	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+	<link rel="stylesheet" type="text/css" href="css/tree_widgets.css">
+</head>
+
+<body>
+
+	<div class="container">
+		<h1>Démo arbre</h1>
+		<input type="button" class="btn" value="redraw" onclick ="vnode.draw()" >
+		<input type="button" class="btn" value="undo" onclick ="undo()" >
+		<input type="button" class="btn" value="redo" onclick ="redo()" >
+		<div class="row">
+			<div class="span4">
+				<div class="well" id="zone"></div>
+			</div>
+			<div class="span4">
+				<div class="well" id="situation"></div>
+			</div>
+			<div class="span4">
+				<div id="texte"></div>
+			</div>
+		</div>
+	</div>
+
+	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+	<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+	<script type="text/javascript" src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+	<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+	<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+
+	<script type="text/javascript" src="js/innova_mvc.js"></script>
+	<script type="text/javascript" src="js/tree_widgets.js"></script>
+
+	<script>
+		vnode= new node ("Etape");
+		vnode1= new node ("noeud1", {
+			ressources:[{
+				resourceIn: [
+					{"abstractType" : "text"},
+					{"resourceURL" : "http://www.u-grenoble3.fr"}
+				],
+				resourceIn: [
+					{"abstractType" : "video"},
+					{"resourceURL" : "http://www.youtube.com/watch?feature=player_detailpage&v=pf1FpK5eQFY"}
+				]
+			}]
+		});	
+
+		vnode2= new node ("noeud2");
+		vnode3= new node ("noeud3");
+		vnode4= new node ("noeud4");
+		vnode5= new node ("noeud5");
+		vnode21= new node ("noeud21");
+		vnode.appendChild(vnode1);
+		vnode.appendChild(vnode2);
+	//	vnode.insertChildAtIndex(vnode3, 1);
+		vnode.appendChild(vnode4);
+		vnode.appendChild(vnode5);
+		vnode2.appendChild(vnode21);
+	//	vnode3.moveChildAtIndex (vnode21,0);
+		resetUndo () ;
+		vnode.draw();
+		$("#zone").append(vnode._view[0]);
+	</script>
+</body>
+</html>

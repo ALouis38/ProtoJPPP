@@ -1,0 +1,35 @@
+html {
+    -moz-user-select: -moz-none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+ 
+::selection { background: transparent; color:inherit; }
+::-moz-selection { background: transparent; color:inherit; }
+
+
+.toolbar_standard_skin  {
+	margin:20px;
+	top: 130px;
+	height:100px;
+	background-color:lightgrey;
+	border-style:inset;	
+	clear: both;	
+}
+.toolbar_standard_skin .widget_play ,
+.toolbar_standard_skin .widget_pause,
+.toolbar_standard_skin .widget_stop
+{
+	width:34px;
+	height:34px;
+	margin : 2px;
+	border-style:outset;	
+	background-color:lightgreen;
+	float:left;
+	text-align:center;
+	vertical-align:middle;
+	font-size:11px;
+	cursor:pointer;
+}
