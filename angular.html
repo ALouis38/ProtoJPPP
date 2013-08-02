@@ -1,20 +1,30 @@
 <!doctype html>
-<html lang="fr" data-ng-app="myApp">
+<html lang="fr" data-ng-app="app">
 <head>
     <meta charset="UTF-8">
     <title>Simple MVC Model demo</title>
-    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.2/css/bootstrap.css">
+    <style>
+.minimized > ul > li { display:none; }
+.minimized > ul {   border: 0 none transparent; }
+.toggle { border: 0 none transparent; background:transparent; width:2em; color:#aaa; }
+button { cursor: pointer }
+    </style>
 </head>
 <body>
 
-    <div class="container">
+    <div class="container" data-ng-controller="TreeController">
         <h1>Démo arbre</h1>
         <input type="button" class="btn" value="redraw" onclick ="vnode.draw()" >
         <input type="button" class="btn" value="undo" onclick ="undo()" >
         <input type="button" class="btn" value="redo" onclick ="redo()" >
         <div class="row">
             <div class="span4">
-                <div class="well" id="zone"></div>
+                <div class="well" id="zone">
+                    <ul>
+                        <li ng-repeat="activity in activities" ng-include="'app/partials/tree-item.html'"></li>
+                    </ul>
+                </div>
             </div>
             <div class="span4">
                 <div class="well" id="situation"></div>
@@ -25,39 +35,70 @@
                 </div>
             </div>
         </div>
-    </div>
+        <div >
+            <div class="well">
 
-    <div data-ng-controller="MyController">
-        <!-- <pre>{{ data | json}}</pre> -->
-        <div class="well">
-
+            </div>
+            <pre>{{ activities | json}}</pre>
         </div>
-        <pre>{{ nodes | json}}</pre>
     </div>
 
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular-strap/0.7.4/angular-strap.min.js"></script>
 
-
-    <a href="index.html">Index</a>
-
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.1/angular.min.js"></script>
     <script src="js/Node.js"></script>
+    
+
     <script>
 
-        var myApp = angular.module('myApp', []);
+        var app = angular.module('app', ['$strap.directives']);
 
         function MyController($scope, $http){
-            // $http.get('tree.json')
-            //     .success(function(data) {
-            //         $scope.data = data;
-            //     }
-            // );
-
-            // TEST Affichage
-            $scope.nodes = myNode2.toJSON();
-            /////////////////////////////////
+            $scope.children = myNode2.toJSON();
         }
 
-        myApp.controller('MyController', MyController);
+        app.controller('MyController', MyController);
+
+
+        app.controller("TreeController", ['$scope', '$http', function($scope, $http) {
+            $scope.toggleMinimized = function (child) {
+                child.minimized = !child.minimized;
+            };
+
+
+            $http.get('tree.json')
+                .success(function(json) {
+                    $scope.activities = json;
+                }
+            );
+
+
+            // $scope.remove = function(activity) {
+                
+            //     var index = $scope.activities.indexOf(activity);
+            //     console.log($scope.activities);
+            //     if (index != -1) {
+            //         $scope.activities.splice(index, 1);
+            //     }
+            // };
+
+            $scope.remove = function (activity) {
+                // TODO
+                activity.children = [];
+            }
+
+            $scope.removeChildren = function(activity) {
+                activity.children = [];
+            };
+
+            $scope.addChild = function(activity) {
+                var post = activity.children.length + 1;
+                var newName = activity.name + '-' + post;
+                activity.children.push({name: newName,children: []});
+            };
+        }]);
 
     </script>
 
@@ -94,11 +135,9 @@
 
         myNode2.removeChild(5);
 
-        console.log(myNode2.toJSON());
-        console.log(myNode5.toJSON());
-        console.log(myNode2.id);
-
-        /******************************************************************************/
+        // console.log(myNode2.toJSON());
+        // console.log(myNode5.toJSON());
+        // console.log(myNode2.id);
 
 
 
@@ -112,39 +151,22 @@
 
 
 
+        /************************** UTILITY *****************************/
 
+        function dump(obj) {
+            var out = '';
+            for (var i in obj) {
+                out += i + ": " + obj[i] + "\n";
+            }
 
+            alert(out);
 
+            // or, if you wanted to avoid alerts...
 
-
-
-        /* ===========UTILITIES ===================================*/
-/*function getRootNode (pNode) {
-    vRoot=pNode
-    while (vRoot.parentNode!=null) {
-        vRoot=vRoot.parentNode;
-    }
-    return (vRoot);
-}
-
-
-
-function getChildIndex (pNode) {
-    vParent=pNode.parentNode;
-    if (vParent!=null) {
-        vChildIndex=vParent.childNodes.indexOf(pNode);
-    } else {
-        vChildIndex=0;
-    }
-    return (vChildIndex);
-}
-
-function getClassInstancesNb(pClassName) { // TO CHECK DOESNT WORK
-    return (document.getElementsByClassName(pClassName).length);
-}*/
-
-
-
+            var pre = document.createElement('pre');
+            pre.innerHTML = out;
+            document.body.appendChild(pre)
+        }
 
 
 
