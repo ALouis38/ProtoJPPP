@@ -16,13 +16,14 @@ button { cursor: pointer }
     <div class="container" data-ng-controller="TreeController">
         <h1>Démo arbre</h1>
         <input type="button" class="btn" value="redraw" onclick ="vnode.draw()" >
-        <input type="button" class="btn" value="undo" onclick ="undo()" >
+        <input type="button" class="btn" value="undo" ng-click="undo(path.history)" >
         <input type="button" class="btn" value="redo" onclick ="redo()" >
         <div class="row">
             <div class="span4">
                 <div class="well" id="zone">
+                    <h4>{{ path.name }}</h4>
                     <ul>
-                        <li ng-repeat="activity in activities" ng-include="'app/partials/tree-item.html'"></li>
+                        <li ng-repeat="activity in path.activities" ng-include="'app/partials/tree-item.html'"></li>
                     </ul>
                 </div>
             </div>
@@ -39,7 +40,8 @@ button { cursor: pointer }
             <div class="well">
 
             </div>
-            <pre>{{ activities | json}}</pre>
+            <pre id="myJson">{{ path | json}}</pre>
+            <pre>{{ path.history }}</pre>
         </div>
     </div>
 
@@ -47,9 +49,7 @@ button { cursor: pointer }
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular-strap/0.7.4/angular-strap.min.js"></script>
-
-    <script src="js/Node.js"></script>
-    
+    <!--<script src="js/Node.js"></script>-->
 
     <script>
 
@@ -61,28 +61,36 @@ button { cursor: pointer }
 
         app.controller('MyController', MyController);
 
-
         app.controller("TreeController", ['$scope', '$http', function($scope, $http) {
-            $scope.toggleMinimized = function (child) {
-                child.minimized = !child.minimized;
-            };
 
+            // $scope.toggleMinimized = function (child) {
+            //     child.minimized = !child.minimized;
+            // };
 
             $http.get('tree.json')
                 .success(function(json) {
-                    $scope.activities = json;
+                    $scope.path = json[0];
+                    //$scope.path = "titi"; --> On retrouve aussi titi au lieu de la surcharge toto ce dessous
                 }
             );
 
 
-            // $scope.remove = function(activity) {
+            /*LA RACINE DE TOUT NOS PROBLEMES VIENT D'ICI*/
+            /*Pourqui la methode précedante ne peut pas etre surchargé ??? WTF! */
+
+
+            $scope.path = "toto";
+
+
+            $scope.undo = function (id) {
+                //console.log(id);
+                $http.post('api/index.php/pathversions/undo/' + id) //TODO prefix path comme dans la video d'angular
+                    .success(function(json) {
+                        $scope.history = json[0]["history"]
+                    }
+                );
                 
-            //     var index = $scope.activities.indexOf(activity);
-            //     console.log($scope.activities);
-            //     if (index != -1) {
-            //         $scope.activities.splice(index, 1);
-            //     }
-            // };
+            }
 
             $scope.remove = function (activity) {
                 // TODO
@@ -96,20 +104,32 @@ button { cursor: pointer }
             $scope.addChild = function(activity) {
                 var post = activity.children.length + 1;
                 var newName = activity.name + '-' + post;
-                activity.children.push({name: newName,children: []});
+                activity.children.push({name: newName, children: []});
+
+                // C'est Moche mais ca marche
+                $scope.path = $('#myJson').html();
+                
+                $scope.updateDB($scope.path);
             };
+
+            $scope.updateDB = function(json) {
+                $http.post('api/index.php/pathversions', json) //TODO prefix path comme dans la video d'angular
+                    .success(function(json) {
+                        $scope.path = json;
+                        alert($scope.path);
+                    }
+                );
+            }
         }]);
 
     </script>
 
     <script>
 
-
-
         /**************************************************************************/
         // TEST
 
-        var myNode = new Node('My Node', '', 'par');
+        /*var myNode = new Node('My Node', '', 'par');
         var myNode2 = new Node('My Node 2', '', 'par');
         var myNode3 = new Node('My Node 3', '', 'seq');
         var myNode4 = new Node('My Node 4', '', 'seq');
@@ -133,7 +153,7 @@ button { cursor: pointer }
         myNode5.parent = myNode2;
         myNode2.addChild(myNode5);
 
-        myNode2.removeChild(5);
+        myNode2.removeChild(5);*/
 
         // console.log(myNode2.toJSON());
         // console.log(myNode5.toJSON());
