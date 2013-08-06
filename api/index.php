@@ -48,14 +48,13 @@ $app->post('/pathversions', function () use($app, $db) {
         }
 
         $db = null;
-        
+
     } catch(PDOException $e) {
         echo '{"error":{"text":'. $e->getMessage() .'}}';
     }
 
     // TODO PETER LES BRANCHES PARALELLES
 
-    //echo $body;
 });
 
 $app->post('/pathversions/undo/:id', function ($id = null) use($app, $db) { 
