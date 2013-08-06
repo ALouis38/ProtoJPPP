@@ -3,10 +3,8 @@
 <a href="#" class="tools-trigger">{{activity.name}}</a> 
 
 <div class="tools" ng-controller="TreeController">
-	<button class="btn btn-mini" ng-click="add(activity)">v</button>
 	<button class="btn btn-mini" ng-click="addChild(activity)">-></button>
 	<button class="btn btn-danger btn-mini" ng-click="removeChildren(activity)" ng-show="activity.children.length > 0">Kill all children</button>
-	<button class="btn btn-danger btn-mini" ng-click="remove(activity)" ng-show="activity.children.length > 0">Kill me</button>
 </div>
 
 <ul>

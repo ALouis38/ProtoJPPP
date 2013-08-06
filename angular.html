@@ -15,7 +15,8 @@ button { cursor: pointer }
 
     <div class="container" data-ng-controller="TreeController">
         <h1>Démo arbre</h1>
-        <input type="button" class="btn" value="redraw" onclick ="vnode.draw()" >
+        <input type="button" class="btn" value="init" ng-click ="init()" >
+        <!--<input type="button" class="btn" value="redraw" onclick ="vnode.draw()" >-->
         <input type="button" class="btn" value="undo" ng-click="undo(path.history)" >
         <input type="button" class="btn" value="redo" onclick ="redo()" >
         <div class="row">
@@ -41,7 +42,7 @@ button { cursor: pointer }
 
             </div>
             <pre id="myJson">{{ path | json}}</pre>
-            <pre>{{ path.history }}</pre>
+            <pre>{{ history }}</pre>
         </div>
     </div>
 
@@ -63,39 +64,34 @@ button { cursor: pointer }
 
         app.controller("TreeController", ['$scope', '$http', function($scope, $http) {
 
+ 
             // $scope.toggleMinimized = function (child) {
             //     child.minimized = !child.minimized;
             // };
 
-            $http.get('tree.json')
-                .success(function(json) {
-                    $scope.path = json[0];
-                    //$scope.path = "titi"; --> On retrouve aussi titi au lieu de la surcharge toto ce dessous
-                }
-            );
-
-
-            /*LA RACINE DE TOUT NOS PROBLEMES VIENT D'ICI*/
-            /*Pourqui la methode précedante ne peut pas etre surchargé ??? WTF! */
-
-
-            $scope.path = "toto";
-
+            $scope.init = function (id) {
+                $http.get('tree.json')
+                    .success(function(json) {
+                        $scope.path = json['path'];
+                        $scope.history = json['history'];
+                    }
+                );
+            }
 
             $scope.undo = function (id) {
                 //console.log(id);
                 $http.post('api/index.php/pathversions/undo/' + id) //TODO prefix path comme dans la video d'angular
                     .success(function(json) {
-                        $scope.history = json[0]["history"]
+                        $scope.history = json[0]["history"] //TODO
                     }
                 );
                 
             }
 
-            $scope.remove = function (activity) {
+           /* $scope.remove = function (activity) {
                 // TODO
                 activity.children = [];
-            }
+            }*/
 
             $scope.removeChildren = function(activity) {
                 activity.children = [];
@@ -104,19 +100,28 @@ button { cursor: pointer }
             $scope.addChild = function(activity) {
                 var post = activity.children.length + 1;
                 var newName = activity.name + '-' + post;
-                activity.children.push({name: newName, children: []});
 
-                // C'est Moche mais ca marche
-                $scope.path = $('#myJson').html();
+                console.log(post);
+                activity.children.push(
+                    {
+                        name: newName, 
+                        children: []
+                    }
+                );
                 
+                console.log($scope.path);
+                //console.log($("#myJson").html());
+
                 $scope.updateDB($scope.path);
             };
 
-            $scope.updateDB = function(json) {
-                $http.post('api/index.php/pathversions', json) //TODO prefix path comme dans la video d'angular
+           $scope.updateDB = function(path) {
+                $http.post('api/index.php/pathversions', path) //TODO prefix path comme dans la video d'angular
                     .success(function(json) {
-                        $scope.path = json;
-                        alert($scope.path);
+                        $scope.path = json['path']; 
+                        //console.log(json['path']);                   
+                        $scope.history = json['history'];  
+                        //console.log(json['history']);                 
                     }
                 );
             }
