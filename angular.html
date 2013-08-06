@@ -5,10 +5,13 @@
     <title>Simple MVC Model demo</title>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.2/css/bootstrap.css">
     <style>
-.minimized > ul > li { display:none; }
-.minimized > ul {   border: 0 none transparent; }
-.toggle { border: 0 none transparent; background:transparent; width:2em; color:#aaa; }
-button { cursor: pointer }
+        li {
+            list-style: none;
+        }
+        .minimized > ul > li { display:none; }
+        .minimized > ul {   border: 0 none transparent; }
+        .toggle { border: 0 none transparent; background:transparent; width:2em; color:#aaa; }
+        button { cursor: pointer }
     </style>
 </head>
 <body>
@@ -65,9 +68,9 @@ button { cursor: pointer }
         app.controller("TreeController", ['$scope', '$http', function($scope, $http) {
 
  
-            // $scope.toggleMinimized = function (child) {
-            //     child.minimized = !child.minimized;
-            // };
+            $scope.toggleMinimized = function (child) {
+                child.minimized = !child.minimized;
+            };
 
             $scope.init = function (id) {
                 $http.get('tree.json')
@@ -78,7 +81,7 @@ button { cursor: pointer }
                 );
             }
 
-            $scope.undo = function (id) {
+            /*$scope.undo = function (id) {
                 //console.log(id);
                 $http.post('api/index.php/pathversions/undo/' + id) //TODO prefix path comme dans la video d'angular
                     .success(function(json) {
@@ -86,7 +89,7 @@ button { cursor: pointer }
                     }
                 );
                 
-            }
+            }*/
 
            /* $scope.remove = function (activity) {
                 // TODO
@@ -108,9 +111,6 @@ button { cursor: pointer }
                         children: []
                     }
                 );
-                
-                console.log($scope.path);
-                //console.log($("#myJson").html());
 
                 $scope.updateDB($scope.path);
             };
@@ -118,10 +118,9 @@ button { cursor: pointer }
            $scope.updateDB = function(path) {
                 $http.post('api/index.php/pathversions', path) //TODO prefix path comme dans la video d'angular
                     .success(function(json) {
-                        $scope.path = json['path']; 
-                        //console.log(json['path']);                   
+                        $scope.path = json['path'];                  
                         $scope.history = json['history'];  
-                        //console.log(json['history']);                 
+                        console.log(json['history']);                 
                     }
                 );
             }
