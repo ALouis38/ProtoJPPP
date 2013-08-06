@@ -12,42 +12,43 @@ $app->get('/hello/:name', function ($name) {
 });
 
 $app->post('/pathversions', function () use($app, $db) {
-	
+
+    
     $request = $app->request();
-    $body = $request->getBody();
+    $path = $request->getBody();
     
-    $post = $request->getBody();
+    $sql = "INSERT INTO pathversions (path, user, edit_date) VALUES (:path, :user, :edit_date)";
     
-    $sql = "INSERT INTO pathversions (json, user, edit_date) VALUES (:json, :user, :edit_date)";
     try {
         $user = "Donovan";
         $date = "";
         $stmt = $db->prepare($sql);
-        $stmt->bindParam("json", $post);
+        $stmt->bindParam("path", $path);
         $stmt->bindParam("user", $user);
         $stmt->bindParam("edit_date", $date);
         $stmt->execute();
         
         $lastId = $db->lastInsertId();
 
-        $sql = "SELECT id, json FROM pathversions WHERE pathversions.id = :lastId"; 
+        $sql = "SELECT id, path FROM pathversions WHERE pathversions.id = :id"; 
         $stmt = $db->prepare($sql);
-        $stmt->bindParam("lastId", $lastId);
+        $stmt->bindParam("id", $lastId);
         $stmt->execute();
 
         $result = $stmt->fetchObject();
 
         if ($result) { 
-            $json = json_decode($result->json);
-
-            $history = array('history'=> $result->id);
-            $json[] = $history;
+            $json = array();
+            $json['path'] = json_decode($result->path, true);
+            
+            $history = $result->id;
+            $json['history'] = $history;
 
             echo json_encode($json);
         }
 
         $db = null;
-        //echo $post;
+        
     } catch(PDOException $e) {
         echo '{"error":{"text":'. $e->getMessage() .'}}';
     }

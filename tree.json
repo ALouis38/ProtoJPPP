@@ -1,5 +1,5 @@
-[
-    {
+{
+    "path" : {
 
         "name" : "My Path Name",
         "activities" : [
@@ -18,5 +18,7 @@
                 "children": []
             }
         ]
-    }
-]
+    },
+    
+    "history" : 211
+}
